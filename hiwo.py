@@ -4,9 +4,76 @@ import time
 from collections import defaultdict
 import tkinter as tk
 from tkinter import scrolledtext, filedialog, messagebox
-import subprocess
 import sys
 import io
+import subprocess
+
+class SimpleTerminalIDE:
+    def __init__(self):
+        self.code = ""
+
+    def run(self):
+        while True:
+            command = input("IDE > ").strip().lower()
+            if command == "exit":
+                break
+            elif command == "write":
+                self.write_code()
+            elif command == "run":
+                self.run_code()
+            elif command == "show":
+                self.show_code()
+            elif command == "clear":
+                self.clear_code()
+            elif command == "help":
+                self.show_help()
+            else:
+                print("Comando desconhecido. Digite 'help' para ver os comandos disponíveis.")
+
+    def write_code(self):
+        print("Digite seu código Python. Digite 'END' em uma nova linha para finalizar.")
+        lines = []
+        while True:
+            line = input()
+            if line.strip().upper() == "END":
+                break
+            lines.append(line)
+        self.code = "\n".join(lines)
+
+    def run_code(self):
+        if not self.code:
+            print("Nenhum código para executar. Use 'write' para adicionar código.")
+            return
+        try:
+            result = subprocess.run([sys.executable, "-c", self.code], capture_output=True, text=True, timeout=5)
+            print("Saída:")
+            print(result.stdout)
+            if result.stderr:
+                print("Erros:")
+                print(result.stderr)
+        except subprocess.TimeoutExpired:
+            print("Erro: Tempo de execução excedido (limite de 5 segundos)")
+        except Exception as e:
+            print(f"Erro ao executar o código: {str(e)}")
+
+    def show_code(self):
+        print("Código atual:")
+        print(self.code if self.code else "Nenhum código escrito ainda.")
+
+    def clear_code(self):
+        self.code = ""
+        print("Código limpo.")
+
+    def show_help(self):
+        print("""
+        Comandos disponíveis:
+        write - Escrever ou editar código
+        run - Executar o código atual
+        show - Mostrar o código atual
+        clear - Limpar o código atual
+        help - Mostrar esta mensagem de ajuda
+        exit - Sair da IDE
+        """)
 
 class SimpleChatbot:
     def __init__(self):
@@ -253,10 +320,9 @@ while True:
         print("(main.py abre um app de mensagens)")
         break
     elif acao == 'open(puppy)':
-        print("Digite '/about(pup)' para saber mais sobre o PuppyIDE")
-        time.sleep(3)
-        from HiwoStudio import HiwoStudio
-        HiwoStudio()  
+      if __name__ == "__main__":
+        ide = SimpleTerminalIDE()
+        ide.run()   
     elif acao == 'install(pro)':
         print('''
         instalando o Hiwo Pro...
@@ -280,3 +346,7 @@ while True:
         from pyhton import python
     else:
         print("O Hiwo não consegue encontrar o comando especificado,digite help para obter ajuda")
+
+
+if __name__ == "__main__":
+    main()
